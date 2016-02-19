@@ -1,6 +1,7 @@
 package com.rumi.billtracker;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -46,8 +47,8 @@ public class DashboardActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(getApplicationContext(), CreateItemActivity.class);
+                startActivity(intent);
             }
         });
 
