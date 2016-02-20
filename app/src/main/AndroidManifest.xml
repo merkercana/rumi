@@ -27,6 +27,8 @@
             android:label="@string/title_activity_create_item"
             android:theme="@style/AppTheme" >
         </activity>
+        <activity android:name=".SignUpActivity" >
+        </activity>
     </application>
 
 </manifest>

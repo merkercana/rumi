@@ -15,7 +15,6 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.Query;
 
-import org.w3c.dom.Text;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +24,8 @@ import java.util.Map;
 public class LoginActivity extends AppCompatActivity {
 
     EditText editText;
-    Button button;
+    Button btn_login;
+    Button btn_signUp;
     String username;
     String name;
     Map<String, Object> newMember = new HashMap<String, Object>();
@@ -39,7 +39,8 @@ public class LoginActivity extends AppCompatActivity {
         final Firebase rootRef = new Firebase("https://blazing-inferno-7973.firebaseio.com");
 
         editText = (EditText)findViewById(R.id.editText);
-        button = (Button)findViewById(R.id.button);
+        btn_login = (Button)findViewById(R.id.btn_login);
+        btn_signUp = (Button)findViewById(R.id.btn_signUp);
 
         final Firebase ref = rootRef.child("users");
         Query queryRef = ref.orderByValue();
@@ -71,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        button.setOnClickListener(new View.OnClickListener() {
+        btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 username = editText.getText().toString();
@@ -88,18 +89,24 @@ public class LoginActivity extends AppCompatActivity {
                 memberRef.setValue("");
                 userRef.child("net").setValue(0);
 
-                for (int i = 0; i<usernames.size();i++) {
+                for (int i = 0; i < usernames.size(); i++) {
                     if (usernames.get(i) != username) {
                         memberRef.child(usernames.get(i)).setValue(0);
                         newMember = new HashMap<String, Object>();
                         newMember.put(username, 0);
-
                         rootRef.child("users").child(usernames.get(i)).child("memberRelations").updateChildren(newMember);
                     }
                 }
 
-
                 Intent intent = new Intent(getApplicationContext(), DashboardActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btn_signUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
                 startActivity(intent);
             }
         });
