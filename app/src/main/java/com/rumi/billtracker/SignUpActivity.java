@@ -32,8 +32,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         Firebase.setAndroidContext(this);
         final Firebase ref = new Firebase("https://blazing-inferno-7973.firebaseio.com");
-        final Firebase idRef = ref.child("userID");
-        ref.child("userID").child("man").child("displayName").setValue("Michael");
+
         etb_email = (EditText)findViewById(R.id.etb_email);
         etb_username = (EditText)findViewById(R.id.etb_username);
         etb_password = (EditText)findViewById(R.id.etb_password);
@@ -54,11 +53,9 @@ public class SignUpActivity extends AppCompatActivity {
                             ref.authWithPassword(email, password, new Firebase.AuthResultHandler() {
                                 @Override
                                 public void onAuthenticated(AuthData authData) {
-                                    //Map<String,String> map = new HashMap<String, String>();
-                                    //map.put("displayName",username);
                                     Firebase userRef = ref.child("UserID").child(authData.getUid());
-                                    //userRef.setValue(map);
                                     userRef.child("displayName").setValue(username);
+
 
                                     Intent intent = new Intent(getApplicationContext(), DashboardActivity.class);
                                     startActivity(intent);
