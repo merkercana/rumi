@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.firebase.client.AuthData;
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -23,11 +24,12 @@ import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
-    EditText editText;
+    EditText etb_loginEmail;
+    EditText etb_loginPassword;
     Button btn_login;
     Button btn_signUp;
-    String username;
-    String name;
+    String email;
+    String password;
     Map<String, Object> newMember = new HashMap<String, Object>();
     List<String> usernames = new ArrayList<String>();
 
@@ -38,7 +40,8 @@ public class LoginActivity extends AppCompatActivity {
         Firebase.setAndroidContext(this);
         final Firebase rootRef = new Firebase("https://blazing-inferno-7973.firebaseio.com");
 
-        editText = (EditText)findViewById(R.id.editText);
+        etb_loginEmail = (EditText)findViewById(R.id.etb_loginEmail);
+        etb_loginPassword = (EditText)findViewById(R.id.etb_loginPassword);
         btn_login = (Button)findViewById(R.id.btn_login);
         btn_signUp = (Button)findViewById(R.id.btn_signUp);
 
@@ -48,7 +51,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 usernames.add(dataSnapshot.getKey());
-                name = dataSnapshot.getKey();
             }
 
             @Override
@@ -75,31 +77,29 @@ public class LoginActivity extends AppCompatActivity {
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                username = editText.getText().toString();
+                email = etb_loginEmail.getText().toString();
+                password = etb_loginPassword.getText().toString();
                 //Firebase checkRef = rootRef.child("users").child(username);
                 //Query query = checkRef.equalTo(true);
-                SharedPreferences sharedPreferences = getSharedPreferences(Utility.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(Utility.USERNAME_KEY, username);
-                editor.apply();
 
-                Firebase userRef = rootRef.child("users").child(username);
-                Firebase memberRef = userRef.child("memberRelations");
+                rootRef.authWithPassword(email, password, new Firebase.AuthResultHandler() {
+                    @Override
+                    public void onAuthenticated(AuthData authData) {
+                        SharedPreferences sharedPreferences = getSharedPreferences(Utility.SHARED_PREF_NAME, Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString(Utility.USERNAME_KEY, authData.getUid());
+                        editor.apply();
 
-                memberRef.setValue("");
-                userRef.child("net").setValue(0);
-
-                for (int i = 0; i < usernames.size(); i++) {
-                    if (usernames.get(i) != username) {
-                        memberRef.child(usernames.get(i)).setValue(0);
-                        newMember = new HashMap<String, Object>();
-                        newMember.put(username, 0);
-                        rootRef.child("users").child(usernames.get(i)).child("memberRelations").updateChildren(newMember);
+                        Intent intent = new Intent(getApplicationContext(), DashboardActivity.class);
+                        startActivity(intent);
                     }
-                }
 
-                Intent intent = new Intent(getApplicationContext(), DashboardActivity.class);
-                startActivity(intent);
+                    @Override
+                    public void onAuthenticationError(FirebaseError firebaseError) {
+
+                    }
+                });
+
             }
         });
 

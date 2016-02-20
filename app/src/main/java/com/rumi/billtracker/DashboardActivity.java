@@ -19,14 +19,27 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.firebase.client.AuthData;
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
+
 public class DashboardActivity extends AppCompatActivity {
 
     DrawerLayout drawerLayout;
+    String uid;
+    String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+
+        Firebase.setAndroidContext(this);
+        final Firebase rootRef = new Firebase("https://blazing-inferno-7973.firebaseio.com");
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -41,9 +54,40 @@ public class DashboardActivity extends AppCompatActivity {
         }
 
         SharedPreferences sharedPreferences = getSharedPreferences(Utility.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        setTitle(sharedPreferences.getString(Utility.USERNAME_KEY, null));
+        uid = sharedPreferences.getString(Utility.USERNAME_KEY, null);
+        //setTitle(uid);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        Query queryRef = rootRef.child("userID").child(uid).orderByKey();
+        queryRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                username = dataSnapshot.getKey();
+                setTitle(username);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+
+
+                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
