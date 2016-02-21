@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.firebase.client.AuthData;
 import com.firebase.client.ChildEventListener;
@@ -106,7 +107,7 @@ public class SignUpActivity extends AppCompatActivity {
 
                                     SharedPreferences sharedPreferences = getSharedPreferences(Utility.SHARED_PREF_NAME, Context.MODE_PRIVATE);
                                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                                    editor.putString(Utility.USERNAME_KEY, authData.getUid());
+                                    editor.putString(Utility.USERNAME_KEY, username);
                                     editor.apply();
 
                                     Intent intent = new Intent(getApplicationContext(), DashboardActivity.class);
@@ -115,14 +116,14 @@ public class SignUpActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onAuthenticationError(FirebaseError firebaseError) {
-
+                                    Toast.makeText(getApplicationContext(),firebaseError.getMessage(),Toast.LENGTH_LONG).show();
                                 }
                             });
                         }
 
                         @Override
                         public void onError(FirebaseError firebaseError) {
-
+                            Toast.makeText(getApplicationContext(),firebaseError.getMessage(),Toast.LENGTH_LONG).show();
                         }
                     });
                 }

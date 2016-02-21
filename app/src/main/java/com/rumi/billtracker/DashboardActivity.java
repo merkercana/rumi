@@ -12,12 +12,15 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.TextViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.firebase.client.AuthData;
 import com.firebase.client.ChildEventListener;
@@ -30,12 +33,16 @@ public class DashboardActivity extends AppCompatActivity {
 
     DrawerLayout drawerLayout;
     String uid;
-    String username;
+    String displayName;
+    Button btn_group;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+
+        btn_group = (Button)findViewById(R.id.btn_Group);
 
         Firebase.setAndroidContext(this);
         final Firebase rootRef = new Firebase("https://blazing-inferno-7973.firebaseio.com");
@@ -54,37 +61,9 @@ public class DashboardActivity extends AppCompatActivity {
         }
 
         SharedPreferences sharedPreferences = getSharedPreferences(Utility.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        uid = sharedPreferences.getString(Utility.USERNAME_KEY, null);
-        //setTitle(uid);
+        displayName = sharedPreferences.getString(Utility.USERNAME_KEY, null);
 
-        Query queryRef = rootRef.child("userID").child(uid).orderByKey();
-        queryRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                username = dataSnapshot.getKey();
-                setTitle(username);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
+        setTitle(displayName);
 
 
                 FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -102,6 +81,14 @@ public class DashboardActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override public boolean onNavigationItemSelected(MenuItem menuItem) {
                 return true;
+            }
+        });
+
+        btn_group.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), GroupActivity.class);
+                startActivity(intent);
             }
         });
     }

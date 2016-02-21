@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.client.AuthData;
 import com.firebase.client.ChildEventListener;
@@ -85,19 +86,47 @@ public class LoginActivity extends AppCompatActivity {
 
                 rootRef.authWithPassword(email, password, new Firebase.AuthResultHandler() {
                     @Override
-                    public void onAuthenticated(AuthData authData) {
-                        SharedPreferences sharedPreferences = getSharedPreferences(Utility.SHARED_PREF_NAME, Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString(Utility.USERNAME_KEY, authData.getUid());
-                        editor.apply();
+                    public void onAuthenticated(final AuthData authData) {
+                        Query queryRef = rootRef.child("UserID").child(authData.getUid()).orderByKey();
+                        queryRef.addChildEventListener(new ChildEventListener() {
+                            @Override
+                            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
-                        Intent intent = new Intent(getApplicationContext(), DashboardActivity.class);
-                        startActivity(intent);
+
+                                SharedPreferences sharedPreferences = getSharedPreferences(Utility.SHARED_PREF_NAME, Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putString(Utility.USERNAME_KEY, dataSnapshot.getKey());
+                                editor.apply();
+
+                                Intent intent = new Intent(getApplicationContext(), DashboardActivity.class);
+                                startActivity(intent);
+                            }
+
+                            @Override
+                            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                            }
+
+                            @Override
+                            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                            }
+
+                            @Override
+                            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                            }
+
+                            @Override
+                            public void onCancelled(FirebaseError firebaseError) {
+
+                            }
+                        });
                     }
 
                     @Override
                     public void onAuthenticationError(FirebaseError firebaseError) {
-
+                        Toast.makeText(getApplicationContext(), firebaseError.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
 

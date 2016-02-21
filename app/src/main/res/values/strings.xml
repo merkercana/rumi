@@ -2,4 +2,8 @@
     <string name="app_name">BillTracker</string>
     <string name="title_activity_dashboard">DashboardActivity</string>
     <string name="title_activity_create_item">CreateItemActivity</string>
+    <string name="title_activity_group">GroupActivity</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
