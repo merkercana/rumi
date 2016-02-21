@@ -81,7 +81,7 @@ public class SignUpActivity extends AppCompatActivity {
                 username = etb_username.getText().toString();
                 password = etb_password.getText().toString();
 
-                if (email != "" && password != "") {
+                if (!email.equals("") && !password.equals("")) {
                     rootRef.createUser(email, password, new Firebase.ValueResultHandler<Map<String, Object>>() {
                         @Override
                         public void onSuccess(Map<String, Object> stringObjectMap) {

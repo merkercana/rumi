@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.firebase.client.AuthData;
 import com.firebase.client.ChildEventListener;
@@ -27,11 +28,11 @@ public class LoginActivity extends AppCompatActivity {
     EditText etb_loginEmail;
     EditText etb_loginPassword;
     Button btn_login;
-    Button btn_signUp;
+    TextView text_signUp;
     String email;
     String password;
-    Map<String, Object> newMember = new HashMap<String, Object>();
-    List<String> usernames = new ArrayList<String>();
+    Map<String, Object> newMember = new HashMap<>();
+    List<String> usernames = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
         etb_loginEmail = (EditText)findViewById(R.id.etb_loginEmail);
         etb_loginPassword = (EditText)findViewById(R.id.etb_loginPassword);
         btn_login = (Button)findViewById(R.id.btn_login);
-        btn_signUp = (Button)findViewById(R.id.btn_signUp);
+        text_signUp = (TextView) findViewById(R.id.text_signUp);
 
         final Firebase ref = rootRef.child("users");
         Query queryRef = ref.orderByValue();
@@ -103,7 +104,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        btn_signUp.setOnClickListener(new View.OnClickListener() {
+        text_signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
