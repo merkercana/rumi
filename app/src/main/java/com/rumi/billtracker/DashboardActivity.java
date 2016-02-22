@@ -19,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -35,6 +36,8 @@ public class DashboardActivity extends AppCompatActivity {
     String uid;
     String displayName;
     Button btn_group;
+    Button btn_createGroup;
+    EditText etb_createGroupName;
 
 
     @Override
@@ -43,6 +46,8 @@ public class DashboardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_dashboard);
 
         btn_group = (Button)findViewById(R.id.btn_Group);
+        btn_createGroup = (Button)findViewById(R.id.btn_createGroup);
+        etb_createGroupName = (EditText)findViewById(R.id.etb_createGroupName);
 
         Firebase.setAndroidContext(this);
         final Firebase rootRef = new Firebase("https://blazing-inferno-7973.firebaseio.com");
@@ -66,7 +71,7 @@ public class DashboardActivity extends AppCompatActivity {
         setTitle(displayName);
 
 
-                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -79,7 +84,8 @@ public class DashboardActivity extends AppCompatActivity {
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override public boolean onNavigationItemSelected(MenuItem menuItem) {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
                 return true;
             }
         });
@@ -87,10 +93,27 @@ public class DashboardActivity extends AppCompatActivity {
         btn_group.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), GroupActivity.class);
-                startActivity(intent);
+                startGroupActivity(etb_createGroupName.getText().toString());
             }
         });
+
+        btn_createGroup.setOnClickListener((new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utility.createGroup(rootRef, etb_createGroupName.getText().toString(), displayName);
+                startGroupActivity(etb_createGroupName.getText().toString());
+            }
+        }));
+    }
+
+    public void startGroupActivity(String groupName){
+        SharedPreferences sharedPreferences = getSharedPreferences(Utility.GROUP_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(Utility.GROUP_NAME, groupName);
+        editor.apply();
+
+        Intent intent = new Intent(getApplicationContext(), GroupActivity.class);
+        startActivity(intent);
     }
 
     @Override

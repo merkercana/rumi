@@ -13,9 +13,35 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Group"
+        android:text="Go to Group"
         android:id="@+id/btn_Group"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="91dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Button"
+        android:id="@+id/button"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="72dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Group"
+        android:id="@+id/btn_createGroup"
+        android:layout_below="@+id/etb_createGroupName"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/etb_createGroupName"
+        android:hint="Group Name"
+        android:layout_below="@+id/btn_Group"
+        android:layout_alignLeft="@+id/button"
+        android:layout_alignStart="@+id/button" />
 </RelativeLayout>

@@ -17,6 +17,7 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.Query;
+import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +33,7 @@ public class LoginActivity extends AppCompatActivity {
     TextView text_signUp;
     String email;
     String password;
-    Map<String, Object> newMember = new HashMap<>();
+    Button button2;
     List<String> usernames = new ArrayList<>();
 
     @Override
@@ -45,7 +46,31 @@ public class LoginActivity extends AppCompatActivity {
         etb_loginEmail = (EditText)findViewById(R.id.etb_loginEmail);
         etb_loginPassword = (EditText)findViewById(R.id.etb_loginPassword);
         btn_login = (Button)findViewById(R.id.btn_login);
-        text_signUp = (TextView) findViewById(R.id.text_signUp);
+        text_signUp = (TextView)findViewById(R.id.text_signUp);
+        button2 = (Button)findViewById(R.id.button2);
+
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Query query = rootRef.child("Users").orderByKey();
+                query.addValueEventListener(new ValueEventListener() {
+
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.hasChild(rootRef.child("Users").child("a").getKey()))
+                            button2.setText("yes");
+                        else
+                            button2.setText("no");
+                    }
+
+                    @Override
+                    public void onCancelled(FirebaseError firebaseError) {
+                        button2.setText("cancelled");
+                        Toast.makeText(getApplicationContext(), firebaseError.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
 
         final Firebase ref = rootRef.child("users");
         Query queryRef = ref.orderByValue();

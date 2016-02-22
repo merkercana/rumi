@@ -42,10 +42,10 @@ public class SignUpActivity extends AppCompatActivity {
         Firebase.setAndroidContext(this);
         final Firebase rootRef = new Firebase("https://blazing-inferno-7973.firebaseio.com");
 
-        etb_email = (EditText)findViewById(R.id.etb_loginEmail);
-        etb_username = (EditText)findViewById(R.id.etb_username);
-        etb_password = (EditText)findViewById(R.id.etb_password);
-        btn_create = (Button)findViewById(R.id.btn_createUser);
+        etb_email = (EditText) findViewById(R.id.etb_loginEmail);
+        etb_username = (EditText) findViewById(R.id.etb_username);
+        etb_password = (EditText) findViewById(R.id.etb_password);
+        btn_create = (Button) findViewById(R.id.btn_createUser);
 
         Query queryRef = rootRef.child("users").orderByValue();
         queryRef.addChildEventListener(new ChildEventListener() {
@@ -82,7 +82,7 @@ public class SignUpActivity extends AppCompatActivity {
                 username = etb_username.getText().toString();
                 password = etb_password.getText().toString();
 
-                if (!email.equals("") && !password.equals("")) {
+                if (!username.equals("")) {
                     rootRef.createUser(email, password, new Firebase.ValueResultHandler<Map<String, Object>>() {
                         @Override
                         public void onSuccess(Map<String, Object> stringObjectMap) {
@@ -92,18 +92,7 @@ public class SignUpActivity extends AppCompatActivity {
                                     Firebase userRef = rootRef.child("UserID").child(authData.getUid());
                                     userRef.child(username).setValue("exists");
 
-                                    Firebase idRef = rootRef.child("users").child(username);
-                                    Firebase memberRef = idRef.child("memberRelations");
-                                    memberRef.setValue("");
-                                    idRef.child("net").setValue(0);
-
-                                    for (int i = 0; i < usernames.size(); i++) {
-                                        memberRef.child(usernames.get(i)).setValue(0);
-                                        newMember = new HashMap<String, Object>();
-                                        newMember.put(username, 0);
-                                        rootRef.child("users").child(usernames.get(i)).child("memberRelations").updateChildren(newMember);
-                                    }
-
+                                    rootRef.child("Users").child(username).setValue("");
 
                                     SharedPreferences sharedPreferences = getSharedPreferences(Utility.SHARED_PREF_NAME, Context.MODE_PRIVATE);
                                     SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -116,17 +105,18 @@ public class SignUpActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onAuthenticationError(FirebaseError firebaseError) {
-                                    Toast.makeText(getApplicationContext(),firebaseError.getMessage(),Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getApplicationContext(), firebaseError.getMessage(), Toast.LENGTH_LONG).show();
                                 }
                             });
                         }
 
                         @Override
                         public void onError(FirebaseError firebaseError) {
-                            Toast.makeText(getApplicationContext(),firebaseError.getMessage(),Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), firebaseError.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     });
-                }
+                } else
+                    Toast.makeText(getApplicationContext(), "The specified username is invalid.", Toast.LENGTH_LONG).show();
             }
         });
     }
