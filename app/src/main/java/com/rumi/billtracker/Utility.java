@@ -30,10 +30,8 @@ public class Utility {
     public static void createGroup(Firebase rootRef, String groupName, String groupCreator) {
         rootRef.child("Groups").child(groupName).child("Bills").setValue("");
         rootRef.child("Groups").child(groupName).child("Members").child(groupCreator).setValue(0);
-        rootRef.child("Groups").child(groupName).child("isNull").setValue(true);
 
         rootRef.child("Users").child(groupCreator).child(groupName).child("MemberRelations").setValue("");
-        rootRef.child("Users").child(groupCreator).child(groupName).child("Net").setValue(0);
     }
 
     public static void addMember(final Firebase rootRef, final String groupName, final String member/*, final Context context*/) {

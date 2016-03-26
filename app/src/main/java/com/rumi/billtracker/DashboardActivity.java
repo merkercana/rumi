@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.client.AuthData;
 import com.firebase.client.ChildEventListener;
@@ -29,15 +30,18 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.Query;
+import com.firebase.client.ValueEventListener;
 
 public class DashboardActivity extends AppCompatActivity {
 
     DrawerLayout drawerLayout;
-    String uid;
-    String displayName;
     Button btn_group;
     Button btn_createGroup;
     EditText etb_createGroupName;
+    String uid;
+    String displayName;
+    String groupName;
+    boolean groupCreated;
 
 
     @Override
@@ -45,9 +49,9 @@ public class DashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
-        btn_group = (Button)findViewById(R.id.btn_Group);
-        btn_createGroup = (Button)findViewById(R.id.btn_createGroup);
-        etb_createGroupName = (EditText)findViewById(R.id.etb_createGroupName);
+        btn_group = (Button) findViewById(R.id.btn_Group);
+        btn_createGroup = (Button) findViewById(R.id.btn_createGroup);
+        etb_createGroupName = (EditText) findViewById(R.id.etb_createGroupName);
 
         Firebase.setAndroidContext(this);
         final Firebase rootRef = new Firebase("https://blazing-inferno-7973.firebaseio.com");
@@ -93,20 +97,60 @@ public class DashboardActivity extends AppCompatActivity {
         btn_group.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startGroupActivity(etb_createGroupName.getText().toString());
+                groupName = etb_createGroupName.getText().toString();
+                if (!groupName.equals("")) {
+                    Query verify = rootRef.child("Users").child(displayName);
+                    verify.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.hasChild(rootRef.child("Users").child(displayName).child(groupName).getKey()))
+                                startGroupActivity(groupName);
+                            else
+                                Toast.makeText(getApplicationContext(), "You are not a part of " + groupName, Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
+
+                        }
+                    });
+                } else
+                    Toast.makeText(getApplicationContext(), "Group name cannot be empty", Toast.LENGTH_SHORT).show();
             }
         });
 
         btn_createGroup.setOnClickListener((new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utility.createGroup(rootRef, etb_createGroupName.getText().toString(), displayName);
-                startGroupActivity(etb_createGroupName.getText().toString());
+                groupCreated = false;
+                groupName = etb_createGroupName.getText().toString();
+                if (!groupName.equals("")) {
+                    Query validate = rootRef.child("Groups");
+                    validate.addValueEventListener((new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (!groupCreated) {
+                                if (!dataSnapshot.hasChild(rootRef.child("Groups").child(groupName).getKey())) {
+                                    groupCreated = true;
+                                    Utility.createGroup(rootRef, groupName, displayName);
+                                    startGroupActivity(groupName);
+                                } else
+                                    Toast.makeText(getApplicationContext(), groupName + " already exists", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
+
+                        }
+                    }));
+                } else
+                    Toast.makeText(getApplicationContext(), "Group name cannot be empty", Toast.LENGTH_SHORT).show();
             }
         }));
     }
 
-    public void startGroupActivity(String groupName){
+    public void startGroupActivity(String groupName) {
         SharedPreferences sharedPreferences = getSharedPreferences(Utility.GROUP_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(Utility.GROUP_NAME, groupName);
